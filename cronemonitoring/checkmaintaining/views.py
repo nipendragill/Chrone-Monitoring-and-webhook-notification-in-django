@@ -162,26 +162,3 @@ class UpdateUserAPIView(generics.RetrieveUpdateAPIView):
         except DatabaseError as e:
             return Response({'detail': 'Error connecting to database'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-        # try:
-        #     user = User.objects.get(pk=user_id)
-        #     data = request.data
-        #     print(data, ' is the data')
-        #     for key in data.keys():
-        #         setattr(user, key, data[key])
-        #         user.save()
-        #     serializer = UserSerializer(data=user)
-        #     if serializer.is_valid(raise_exception=True):
-        #         transaction.commit()
-        #         transaction.set_autocommit(True)
-        #         return Response(serializer.data, status=status.HTTP_200_OK)
-        #     else:
-        #         transaction.rollback()
-        #         transaction.set_autocommit(False)
-        #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        # except DatabaseError as ex:
-        #     transaction.rollback()
-        #     transaction.set_autocommit(False)
-        #     return Response({'Detail':'DataBase error occured'},
-        #                     status=status.HTTP_500_INTERNAL_SERVER_ERROR)
