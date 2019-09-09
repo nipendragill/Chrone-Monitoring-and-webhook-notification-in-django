@@ -81,7 +81,7 @@ class ListUserAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         try:
-            queryset = User.objects.all()
+            queryset = User.objects.all().order_by('-created_at')
             queryset = self.paginate_queryset(queryset)
             return queryset, None
         except DatabaseError as e:
@@ -140,17 +140,19 @@ class UpdateUserAPIView(generics.RetrieveUpdateAPIView):
                             status=status.HTTP_400_BAD_REQUEST)
         user_id = int(user_id)
         user, error = self.get_queryset(user_id=user_id)
+        if 'email' in request.data.keys():
+            return Response({'detail':'Can not update email field'},
+                            status=status.HTTP_400_BAD_REQUEST)
         if error is not None:
             return Response({'detial': error.message},
                             status=status.HTTP_400_BAD_REQUEST)
         user = user.first()
-
         transaction.set_autocommit(False)
         try:
             context = {"request": self.request,
                        "updated_by": request.user}
-            serializer = UserProfileWriteSerializer(user, data=request.data, partial=True,
-                                                    context=context)
+            serializer = UserProfileWriteSerializer(user, data=request.data,
+                                                    partial=True, context=context)
             if serializer.is_valid(raise_exception=True):
                 serializer.update(user, request.data)
                 transaction.commit()
