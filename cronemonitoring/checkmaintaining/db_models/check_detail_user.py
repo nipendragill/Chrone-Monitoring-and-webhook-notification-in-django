@@ -1,19 +1,25 @@
 from django.db import models
 from .check import CheckDetails
-from datetime import timedelta, time
+from datetime import timedelta, time, datetime
 from ..error import Error
+from .check import CheckDetails
+from ..models import User
 
 
 class CheckTrack(models.Model):
+    request_choices = (
+        ('post', 'POST'),
+        ('get', 'GET'),
+        ('delete', 'DELETE'),
+        ('put', 'PUT')
+    )
+    check = models.ForeignKey(CheckDetails, on_delete=models.CASCADE())
+    request_type = models.CharField(max_length=10, choices=request_choices)
+    prev_hitted_at = models.DateTimeField(auto_now_add=True)
+    latest_hitted_at = models.DateTimeField(auto_now=True)
+    latest_hit_by = models.ForeignKey(User, on_delete=models.CASCADE())
+    data_in_request_body = models.TextField(max_length=256)
 
-    check_id = models.ForeignKey(CheckDetails, on_delete=models.CASCADE())
-    cron_expected_run_time = models.DateTimeField(auto_now=True)
-    cron_max_run_time = models.DateTimeField(auto_now=True)
-    is_cron_run = models.BooleanField(default=True)
 
-    def crone_expected_run_time(self, time_in_second= None):
-        if time_in_second is None:
-            return False
-        cron_max_run_time = self.cron_expected_run_time + timedelta(seconds=time_in_second)
 
 

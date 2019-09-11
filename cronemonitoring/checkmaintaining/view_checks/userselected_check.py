@@ -4,6 +4,8 @@ from ..db_models.check import CheckDetails
 from ..error import Error
 from django.db import DatabaseError
 from rest_framework import status
+from ..Serializers.checks_serializer import CheckSerializer
+
 
 class UserSelectedCheck(generics.ListCreateAPIView):
 
@@ -18,7 +20,6 @@ class UserSelectedCheck(generics.ListCreateAPIView):
             return Response({'detail':'Database error occured'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
     def get(self, request, *args, **kwargs):
         user_id = kwargs.get('user_id')
         user_id = int(user_id)
@@ -26,9 +27,9 @@ class UserSelectedCheck(generics.ListCreateAPIView):
         if error is not None:
             return Response({'detail':error.message}, status= error.status)
 
-        serializer_class = UserSelectedCheckSerialzer(checks, many=True)
+        serializer_class = CheckSerializer(checks, many=True)
         if serializer_class.is_valid(raise_exception=True):
             return Response(serializer_class.data, status=status.HTTP_200_OK)
         else:
             return Response({'details':serializer_class.errors},
-                             status=status.HTTP_400_BAD_REQUEST})
+                             status=status.HTTP_400_BAD_REQUEST)
