@@ -7,7 +7,7 @@ from django.db.transaction import DatabaseError
 from ..track_check_pings import TrackCheckPings
 from rest_framework.permissions import IsAuthenticated
 from ..db_models.check import CheckDetails
-
+from rest_framework.views import R
 
 class CreateCheck(generics.ListCreateAPIView):
 
@@ -53,6 +53,8 @@ class CreateCheck(generics.ListCreateAPIView):
                             status=status.HTTP_400_BAD_REQUEST)
         serialized_data = CheckSerializer(data, many=True).data
         return self.get_paginated_response(serialized_data)
+
+class EditCheckInfo(view)
 
 
 
