@@ -5,9 +5,12 @@ from ..error import Error
 from django.db import DatabaseError
 from rest_framework import status
 from ..Serializers.checks_serializer import CheckSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
 class UserSelectedCheck(generics.ListCreateAPIView):
+
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self, user_id):
         try:

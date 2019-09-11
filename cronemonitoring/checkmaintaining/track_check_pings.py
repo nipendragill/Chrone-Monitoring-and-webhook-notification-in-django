@@ -13,7 +13,7 @@ class TrackCheckPings:
         try:
             check_track_info = CheckTrack.objects.filter(check_id=check_id).order_by('-latest_hitted_at')
             if check_track_info.exist():
-                latest_check = check_track_info.first()
+                latest_check = check_track_info.first().latest_hitted_check
                 prev_hitted_at = latest_check
                 latest_hitted_at = datetime.datetime.now()
             else:
