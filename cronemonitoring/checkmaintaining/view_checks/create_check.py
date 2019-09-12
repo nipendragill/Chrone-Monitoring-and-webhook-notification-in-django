@@ -73,6 +73,7 @@ class ModifyCheck(generics.UpdateAPIView, generics.DestroyAPIView):
                 check.delete()
                 transaction.commit()
                 transaction.set_autocommit(True)
+                return Response(status=status.HTTP_204_NO_CONTENT)
             except DatabaseError as e:
                 transaction.rollback()
                 transaction.set_autocommit(True)
@@ -81,6 +82,37 @@ class ModifyCheck(generics.UpdateAPIView, generics.DestroyAPIView):
         else:
             return Response({'detail':'No records found with this check Id'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, *args, **kwargs):
+        check_id = kwargs.get('check_id')
+        if check_id is None:
+            return Response({'detail':'Check Id can not be None'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        check_id = int(check_id)
+
+        check = CheckDetails.objects.filter(id=check_id)
+        try:
+            if check.exists():
+                transaction.set_autocommit(False)
+                serializer_class = CheckSerializer(data=check)
+                if serializer_class.is_valid(raise_exception=True):
+                    serializer_class.save()
+                    transaction.commit()
+                    transaction.set_autocommit(True)
+                    return Response(serializer_class.data, status=status.HTTP_200_OK)
+                else:
+                    transaction.rollback()
+                    transaction.set_autocommit(True)
+                    return Response(serializer_class.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            transaction.rollback()
+            transaction.set_autocommit(True)
+            return Response({'detail':'Database error occured'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({'detail':'No check exists with given Id'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
