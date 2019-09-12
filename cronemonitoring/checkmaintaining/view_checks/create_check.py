@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from ..db_models.check import CheckDetails
 from ..db_models.check_detail_user import CheckTrack
 
+
 class CreateCheck(generics.ListCreateAPIView):
 
     permission_classes = (IsAuthenticated, )
@@ -67,7 +68,7 @@ class ModifyCheck(generics.UpdateAPIView, generics.DestroyAPIView):
         if check.exists():
             transaction.set_autocommit(False)
             try:
-                check_details = CheckTrack.objects.filter(check=check_id)
+                check_details = CheckTrack.objects.filter(check__id=check_id)
                 if check_details.exist():
                     check_details.delete()
                 check.delete()

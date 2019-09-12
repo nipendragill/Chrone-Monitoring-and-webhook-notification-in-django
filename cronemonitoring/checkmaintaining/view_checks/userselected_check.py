@@ -4,8 +4,9 @@ from ..db_models.check import CheckDetails
 from ..error import Error
 from django.db import DatabaseError
 from rest_framework import status
-from ..Serializers.checks_serializer import CheckSerializer
+from ..Serializers.checks_serializer import CheckSerializer, CheckTrackSerializer
 from rest_framework.permissions import IsAuthenticated
+from ..db_models.check_detail_user import CheckTrack
 
 
 class UserSelectedCheck(generics.ListCreateAPIView):
@@ -36,3 +37,34 @@ class UserSelectedCheck(generics.ListCreateAPIView):
         else:
             return Response({'details':serializer_class.errors},
                              status=status.HTTP_400_BAD_REQUEST)
+
+
+class PingsOnCheck(generics.ListAPIView):
+
+    def get(self, request, *args, **kwargs):
+        check_id = kwargs.get('check_id')
+
+        check_id = int(check_id)
+        checks_pings = CheckTrack.objects.filter(check__id=check_id)
+        if checks_pings.exists():
+            serializer_class = CheckTrackSerializer(data=checks_pings, many=True)
+            return self.get_paginated_response(serializer_class.data)
+        else:
+            return Response({'detail':'No check exists with given Id'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class LastPingsDetails(generics.ListAPIView):
+
+    def get(self, request, *args, **kwargs):
+
+        check_pings = CheckTrack.objects.all()
+        if check_pings.exists():
+            serializer_class = CheckTrackSerializer(check_pings, many=True)
+            return self.get_paginated_response(serializer_class.data)
+        else:
+            return Response({'detail':'No pings exists till now'},
+                            status=status.HTTP_200_OK)
+
+
+

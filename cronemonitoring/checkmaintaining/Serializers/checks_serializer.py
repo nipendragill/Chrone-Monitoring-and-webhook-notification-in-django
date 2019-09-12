@@ -27,3 +27,4 @@ class CheckTrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckTrack
         fields = '__all__'
+
