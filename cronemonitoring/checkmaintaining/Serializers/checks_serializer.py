@@ -16,6 +16,7 @@ class CheckSerializer(serializers.ModelSerializer):
         check = CheckDetails.objects.create(**validated_data)
         return check
 
+
 class CheckTrackSerializer(serializers.ModelSerializer):
 
     class Meta:
