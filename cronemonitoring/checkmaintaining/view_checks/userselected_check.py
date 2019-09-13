@@ -59,7 +59,7 @@ class LastPingsDetails(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
 
         check_pings = CheckTrack.objects.all()
-        if check_pings.exists():
+        if check_pings.count() !=0:
             serializer_class = CheckTrackSerializer(check_pings, many=True)
             return self.get_paginated_response(serializer_class.data)
         else:
